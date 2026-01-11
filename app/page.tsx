@@ -10,12 +10,28 @@ import { useRouter } from "next/navigation"
 export default function Home() {
   const [searchValue, setSearchValue] = useState("")
   const router = useRouter()
+  const [loading, setLoading] = useState(false)
 
   const handleGo = () => {
     if (searchValue.trim()) {
       router.push(`/search?q=${encodeURIComponent(searchValue)}`)
     } else {
       router.push("/search")
+    }
+  }
+
+  const handleLucky = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch("/api/random")
+      const result = await response.json()
+      if (result.url) {
+        window.open(result.url, "_blank")
+      }
+    } catch (error) {
+      console.error("Error getting random URL:", error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -39,6 +55,20 @@ export default function Home() {
           <Button onClick={handleGo} className="bg-white text-black hover:bg-gray-200 rounded-none px-6">
             go
           </Button>
+        </div>
+
+        <div className="flex gap-4 items-center">
+          <button
+            onClick={handleLucky}
+            disabled={loading}
+            className="text-gray-500 text-sm hover:text-white transition-colors disabled:opacity-50"
+          >
+            {loading ? "loading..." : "i'm feeling lucky"}
+          </button>
+          <span className="text-gray-700">•</span>
+          <Link href="/top" className="text-gray-500 text-sm hover:text-white transition-colors">
+            top
+          </Link>
         </div>
 
         <Link href="/share" className="text-gray-500 text-sm hover:text-white transition-colors text-center">
