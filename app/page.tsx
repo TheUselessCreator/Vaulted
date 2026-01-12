@@ -88,6 +88,10 @@ export default function Home() {
         <Link href="/rules" className="hover:text-white transition-colors">
           rules
         </Link>
+        <span>•</span>
+        <Link href="/api-signup" className="hover:text-white transition-colors">
+          get an api
+        </Link>
       </footer>
     </main>
   )
