@@ -92,7 +92,12 @@ export default function Home() {
         <Link href="/api-signup" className="hover:text-white transition-colors">
           get an api
         </Link>
+        <span>•</span>
+        <Link href="/docs" className="hover:text-white transition-colors">
+          docs
+        </Link>
       </footer>
+      {/* </CHANGE> */}
     </main>
   )
 }

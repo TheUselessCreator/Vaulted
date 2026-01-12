@@ -1,45 +1,40 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 
-export default function ApiSignupPage() {
+export default function ApiSigninPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
   const supabase = createClient()
+  const router = useRouter()
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleSignin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setMessage(null)
 
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
-        options: {
-          emailRedirectTo:
-            process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/api-dashboard`,
-        },
       })
 
       if (error) {
         setMessage({ type: "error", text: error.message })
       } else {
-        setMessage({
-          type: "success",
-          text: "Check your email for a verification link. After verifying, you'll receive your API key.",
-        })
-        setEmail("")
-        setPassword("")
+        setMessage({ type: "success", text: "Signed in successfully. Redirecting..." })
+        setTimeout(() => {
+          router.push("/api-dashboard")
+        }, 1000)
       }
     } catch (error) {
       setMessage({ type: "error", text: "An unexpected error occurred" })
@@ -58,11 +53,11 @@ export default function ApiSignupPage() {
           <Link href="/" className="text-white text-2xl font-light tracking-wide hover:text-gray-300 transition-colors">
             Vaulted
           </Link>
-          <h2 className="mt-6 text-white text-xl font-light">Get API Access</h2>
-          <p className="mt-2 text-sm text-gray-500">Sign up to receive your API key</p>
+          <h2 className="mt-6 text-white text-xl font-light">Sign In</h2>
+          <p className="mt-2 text-sm text-gray-500">Access your API dashboard</p>
         </div>
 
-        <form onSubmit={handleSignup} className="mt-8 space-y-6">
+        <form onSubmit={handleSignin} className="mt-8 space-y-6">
           <div className="space-y-4">
             <Input
               type="email"
@@ -78,7 +73,6 @@ export default function ApiSignupPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="password"
               required
-              minLength={6}
               className="bg-black border border-white text-white placeholder:text-gray-500 focus:border-white focus:ring-0 rounded-none"
             />
           </div>
@@ -98,22 +92,21 @@ export default function ApiSignupPage() {
             disabled={loading}
             className="w-full bg-white text-black hover:bg-gray-200 rounded-none py-3"
           >
-            {loading ? "signing up..." : "sign up"}
+            {loading ? "signing in..." : "sign in"}
           </Button>
         </form>
 
         <div className="text-center space-y-2">
           <p className="text-sm text-gray-500">
-            Already have an account?{" "}
-            <Link href="/api-signin" className="text-white hover:text-gray-300 transition-colors">
-              Sign in
+            Don't have an account?{" "}
+            <Link href="/api-signup" className="text-white hover:text-gray-300 transition-colors">
+              Sign up
             </Link>
           </p>
           <Link href="/" className="block text-sm text-gray-500 hover:text-white transition-colors">
             back to home
           </Link>
         </div>
-        {/* </CHANGE> */}
       </div>
     </main>
   )
